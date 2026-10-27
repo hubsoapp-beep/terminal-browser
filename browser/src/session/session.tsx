@@ -129,6 +129,7 @@ export function createSession(ctx: SessionContext): SessionHandle {
 
 
 const FONT_FILE = path.join("fonts", "JetBrainsMono-Regular.ttf");
+const FONT_FAMILY = "JetBrains Mono";
 
 function bundledFontPath(): string {
   const found = bundledAsset(FONT_FILE);
@@ -223,7 +224,6 @@ class Session {
 
   private layout: ChromeLayout | null = null;
   private surfaceLayout: SurfaceLayout | null = null;
-  private fontId = 0;
 
   private shuttingDown = false;
   private devtoolsDockSide: DevtoolsDock = "bottom";
@@ -366,7 +366,7 @@ class Session {
       onQuit: () => this.shutdown(),
       onExit: (code) => this.ctx.onClose(code),
     });
-    this.fontId = await this.root.registerFont(bundledFontPath());
+    await this.root.registerFont({ family: FONT_FAMILY, src: bundledFontPath() });
     this.settings.setNoSuper(!this.root.info.kittyKeyboard);
     this.applyRenderSettings();
     this.settings.watch();
@@ -518,7 +518,7 @@ class Session {
         actions={this.actions}
         layout={this.layout}
         colors={this.root.info.colors}
-        font={this.fontId}
+        font={FONT_FAMILY}
         findOpen={this.findOpen}
         tabs={this.tabs.view()}
         newTab={

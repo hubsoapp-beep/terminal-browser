@@ -3,6 +3,7 @@ import path from "node:path";
 import { app } from "electron";
 import type { WebViewHandle } from "@zenbu-labs/pixel";
 import { bundledAsset } from "../assets";
+import { grabPlugin } from "./context";
 
 const CHANNEL = "grab";
 const PLUGIN = "terminal-browser";
@@ -19,48 +20,7 @@ function reactGrabLibrary(): string {
   return librarySource;
 }
 
-const REGISTER_PLUGIN = `(api) => {
-  const emit = (data) => window.${BINDING}?.(JSON.stringify({ channel: ${JSON.stringify(CHANNEL)}, data }));
-  const regionAround = (elements) => {
-    let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity;
-    for (const element of elements) {
-      const box = element.getBoundingClientRect();
-      if (box.width === 0 && box.height === 0) continue;
-      left = Math.min(left, box.left);
-      top = Math.min(top, box.top);
-      right = Math.max(right, box.right);
-      bottom = Math.max(bottom, box.bottom);
-    }
-    if (!Number.isFinite(left)) return null;
-    const x = Math.max(0, left - ${REGION_PADDING});
-    const y = Math.max(0, top - ${REGION_PADDING});
-    const x2 = Math.min(window.innerWidth, right + ${REGION_PADDING});
-    const y2 = Math.min(window.innerHeight, bottom + ${REGION_PADDING});
-    return x2 - x >= 1 && y2 - y >= 1 ? { x, y, width: x2 - x, height: y2 - y } : null;
-  };
-  const overlay = document.querySelector("[data-react-grab]")?.shadowRoot;
-  if (overlay && !overlay.querySelector("#${PLUGIN}-style")) {
-    const style = document.createElement("style");
-    style.id = "${PLUGIN}-style";
-    style.textContent = "[data-react-grab-completion] { display: none !important; }";
-    overlay.appendChild(style);
-  }
-  if (api.getPlugins().includes(${JSON.stringify(PLUGIN)})) return;
-  api.registerPlugin({
-    name: ${JSON.stringify(PLUGIN)},
-    theme: { toolbar: { enabled: false } },
-    hooks: {
-      onActivate: () => emit({ type: "active", active: true }),
-      onDeactivate: () => emit({ type: "active", active: false }),
-      transformCopyContent: (content, elements) => {
-        emit({ type: "selected", content, region: regionAround(elements) });
-        api.reset();
-        api.deactivate();
-        return content;
-      },
-    },
-  });
-}`;
+const REGISTER_PLUGIN = grabPlugin({ channel: CHANNEL, plugin: PLUGIN, binding: BINDING, regionPadding: REGION_PADDING });
 
 const COPY_ON_SELECT_BINDING = "__terminalBrowserCopyOnSelect";
 const COPY_ON_SELECT_WORLD_ID = 1013;

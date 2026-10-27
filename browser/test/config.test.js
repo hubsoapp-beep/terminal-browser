@@ -72,7 +72,8 @@ test("keymap swaps super for alt when the terminal cannot report super", () => {
 });
 
 test("keymap reports conflicts between commands sharing a chord", () => {
-  const keymap = new Keymap({ "tab.close": ["ctrl+g"] }, { noSuper: false });
+  const conflicting = { "tab.close": ["cmd+shift+e"], "grab.toggle": ["cmd+shift+e"] };
+  const keymap = new Keymap(conflicting, { noSuper: false });
   assert.deepEqual(keymap.conflicts("tab.close"), ["grab.toggle"]);
   assert.deepEqual(keymap.conflicts("grab.toggle"), ["tab.close"]);
   assert.deepEqual(new Keymap({}, { noSuper: false }).conflicts("tab.close"), []);

@@ -3,6 +3,8 @@
 
 A real browser that runs inside your terminal
 
+> Personal build of [zenbu-labs/terminal-browser](https://github.com/zenbu-labs/terminal-browser) (MIT): precise element picker, `cmd+shift+e` selection shortcut, macOS ad-hoc signing fix.
+
 
 
 <video src="https://github.com/user-attachments/assets/abe2f43e-fc50-4866-b753-33388967945d" controls></video>
@@ -73,7 +75,7 @@ terminal-browser upgrade # upgrade to the latest version
 | Copy / paste / cut | cmd+c / cmd+v / cmd+x | ctrl+c / ctrl+v / ctrl+x |
 | Record page (start/stop) | ctrl+r | ctrl+shift+r |
 | Complete recording review | ctrl+enter | ctrl+enter |
-| Start element selection (send to agent) | ctrl+g | ctrl+g |
+| Start element selection (send to agent) | cmd+shift+e | ctrl+shift+e |
 | Close popup / overlay | escape | escape |
 
 
